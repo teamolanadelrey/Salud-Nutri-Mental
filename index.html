@@ -7,245 +7,380 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 10px;
-      text-align: center;
-      background: #f8d7da; /* rosado pastel claro */
-      color: #5a3e3e; /* marrón rosado oscuro para buen contraste */
+      background: #ffe6f0; /* rosa pastel claro */
+      color: #333;
+      margin: 0;
+      padding: 20px;
     }
-    h1 {
-      color: #a85c6a;
+    .dark {
+      background: #2c2c2c;
+      color: #eee;
     }
-    /* Corazón animado */
-    #breath-heart-container {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
-    }
-    #breath-heart {
-      transform-origin: center;
-      animation: breatheHeart 15s ease-in-out infinite;
-      opacity: 0.7;
-      cursor: default;
-    }
-    @keyframes breatheHeart {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.7;
-      }
-      50% {
-        transform: scale(1.3);
-        opacity: 0.4;
-      }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
     button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: #d87a8a; /* rosa medio */
+      background: #d87a8a;
       color: white;
-      transition: background-color 0.3s ease;
-    }
-    button:hover:not(:disabled) {
-      background-color: #c35f6b;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     button:disabled {
-      background-color: #f3a2ac;
+      background: #aaa;
       cursor: not-allowed;
     }
-    #emotion-form {
-      margin-top: 30px;
-      text-align: left;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    #saved-emotions {
-      margin-top: 20px;
-      text-align: left;
-      max-height: 150px;
-      overflow-y: auto;
-      background: #fbe8eb; /* fondo rosa pastel muy claro */
-      padding: 10px;
+    select {
+      padding: 7px;
       border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 300px;
     }
-    #advice {
-      margin-top: 30px;
-      font-style: italic;
-      color: #a85c6a;
-      min-height: 50px;
+    .section-container {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 8px rgba(216, 122, 138, 0.3);
+    }
+    #breath-heart {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 15px auto;
+      display: block;
+      animation: pulse 4s infinite;
+      filter: drop-shadow(0 0 2px #d87a8a);
+    }
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        fill: url(#grad1);
+      }
+      50% {
+        transform: scale(1.1);
+        fill: url(#grad2);
+      }
+    }
+    canvas {
+      border: 2px solid #d87a8a;
+      border-radius: 10px;
+      touch-action: none;
+    }
+    #assistant {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      background: #ffd9e6;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 6px #d87a8a;
     }
   </style>
 </head>
 <body>
 
-  <h1>Apoyo a la Salud Mental</h1>
+  <header>
+    <h1>Apoyo Salud Mental</h1>
+    <button id="dark-toggle">Modo Oscuro</button>
+  </header>
 
-  <h2>Ejercicio de Respiración</h2>
-  <div id="breath-heart-container">
-    <svg
-      id="breath-heart"
-      viewBox="0 0 32 29.6"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Corazón animado para ejercicio de respiración"
-      role="img"
-    >
+  <div id="assistant" aria-live="polite" aria-atomic="true" role="alert">
+    🐰 <span id="assistant-message">Hola, soy tu asistente conejo. ¡Estoy aquí para apoyarte!</span>
+  </div>
+
+  <!-- Respiración con corazón animado -->
+  <div class="section-container" aria-label="Ejercicio de respiración">
+    <svg id="breath-heart" viewBox="0 0 32 29.6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="grad1" cx="50%" cy="50%" r="70%">
-          <stop offset="0%" style="stop-color:#f8a1ae; stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#d66c7c; stop-opacity:1" />
-        </radialGradient>
-        <radialGradient id="grad2" cx="30%" cy="30%" r="50%">
-          <stop offset="0%" style="stop-color:#fce4e6; stop-opacity:0.8" />
-          <stop offset="100%" style="stop-color:#d66c7c; stop-opacity:0" />
-        </radialGradient>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#f8b9c8;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#d87a8a;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#fbcbd1;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#d15d7a;stop-opacity:1" />
+        </linearGradient>
       </defs>
       <path
         fill="url(#grad1)"
-        stroke="#c75a68"
-        stroke-width="1"
         d="M23.6,0c-3.4,0-6.4,2.7-7.6,4.8C14.8,2.7,11.8,0,8.4,0
            C3.7,0,0,3.6,0,8.2c0,9.1,16,21.4,16,21.4s16-12.3,16-21.4
            C32,3.6,28.3,0,23.6,0z"
+        opacity="0.4"
       />
       <path
         fill="url(#grad2)"
         d="M23.6,0c-3.4,0-6.4,2.7-7.6,4.8C14.8,2.7,11.8,0,8.4,0
            C3.7,0,0,3.6,0,8.2c0,9.1,16,21.4,16,21.4s16-12.3,16-21.4
            C32,3.6,28.3,0,23.6,0z"
-        opacity="0.4"
+        opacity="1"
       />
     </svg>
+    <button id="start-breath" aria-label="Iniciar ejercicio de respiración">Iniciar Respiración (15s)</button>
+    <p id="breath-status">Respira tranquilo...</p>
   </div>
-  <button id="start-btn">Iniciar ejercicio (15s)</button>
 
-  <h2>Registro de Emociones</h2>
-  <form id="emotion-form">
-    <label for="emotion">¿Cómo te sientes?</label>
-    <select id="emotion" required>
+  <!-- Registro de emociones -->
+  <div class="section-container" aria-label="Registro de emociones">
+    <h2>Registro de Emociones</h2>
+    <label for="emotion-select">¿Cómo te sientes hoy?</label>
+    <select id="emotion-select" aria-label="Seleccionar emoción">
       <option value="" disabled selected>Selecciona una emoción</option>
-      <option value="Feliz">Feliz</option>
-      <option value="Triste">Triste</option>
-      <option value="Ansioso">Ansioso</option>
-      <option value="Calmado">Calmado</option>
-      <option value="Enojado">Enojado</option>
-      <option value="Estresado">Estresado</option>
+      <option value="😊">Feliz 😊</option>
+      <option value="😢">Triste 😢</option>
+      <option value="😠">Enojado 😠</option>
+      <option value="😰">Ansioso 😰</option>
+      <option value="😴">Cansado 😴</option>
+      <option value="😍">Enamorado 😍</option>
+      <option value="😌">Relajado 😌</option>
+      <option value="🤔">Pensativo 🤔</option>
+      <option value="😕">Confundido 😕</option>
+      <option value="😭">Deprimido 😭</option>
+      <option value="😇">Esperanzado 😇</option>
+      <option value="😎">Seguro 😎</option>
+      <option value="😡">Frustrado 😡</option>
     </select>
+    <button id="save-emotion" aria-label="Guardar emoción seleccionada">Guardar emoción</button>
 
-    <label for="notes">Notas (opcional)</label>
-    <textarea id="notes" rows="3" placeholder="Escribe algo si quieres..."></textarea>
-
-    <button type="submit">Guardar emoción</button>
-  </form>
-
-  <div id="saved-emotions">
-    <h3>Emociones guardadas:</h3>
-    <ul id="emotion-list"></ul>
+    <div id="saved-emotions" aria-live="polite" aria-atomic="true">
+      <h3>Emociones guardadas:</h3>
+      <ul id="emotion-list"></ul>
+    </div>
   </div>
 
-  <h2>Consejo del Día</h2>
-  <div id="advice"></div>
-  <button id="new-advice-btn">Otro consejo</button>
+  <!-- Sección para dibujar -->
+  <div class="section-container" aria-label="Sección para dibujar">
+    <h2>Dibuja tus emociones</h2>
+    <canvas id="draw-canvas" width="600" height="300" aria-label="Lienzo para dibujar"></canvas><br />
+    <button id="clear-canvas" aria-label="Limpiar dibujo">Limpiar dibujo</button>
+  </div>
+
+  <!-- Consejos diarios -->
+  <div class="section-container" aria-label="Consejos diarios">
+    <h2>Consejo del día</h2>
+    <p id="daily-tip" style="font-style: italic; font-weight: bold;"></p>
+    <button id="new-tip" aria-label="Mostrar otro consejo">Otro consejo</button>
+  </div>
+
+  <!-- Audio relajante -->
+  <div class="section-container" aria-label="Música relajante">
+    <h2>Música relajante</h2>
+    <audio id="relax-audio" controls>
+      <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_b0f089a7fc.mp3?filename=relaxing-music-12420.mp3" type="audio/mpeg" />
+      Tu navegador no soporta audio.
+    </audio>
+  </div>
 
   <script>
-    // Temporizador y animación controlada
-    const startBtn = document.getElementById('start-btn');
+    // Modo oscuro toggle
+    const darkToggle = document.getElementById('dark-toggle');
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      // Guardar preferencia local
+      if (document.body.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
+    });
+    // Cargar preferencia guardada
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    // Asistente conejo mensajes
+    const assistantMsg = document.getElementById('assistant-message');
+    const tips = [
+      "Recuerda respirar profundo y lento. 🐰",
+      "Es normal tener días difíciles, ¡ánimo! 🐇",
+      "No olvides que mereces cuidarte. 💖",
+      "¿Quieres probar un ejercicio de respiración? ❤️",
+      "Escribe o dibuja cómo te sientes, te ayudará. ✍️",
+      "El descanso es parte del autocuidado. 😴",
+      "Sonríe, aunque sea pequeño, hace la diferencia. 😊",
+    ];
+    let tipIndex = 0;
+    setInterval(() => {
+      tipIndex = (tipIndex + 1) % tips.length;
+      assistantMsg.textContent = tips[tipIndex];
+    }, 10000);
+
+    // Respiración con corazón animado y temporizador
     const breathHeart = document.getElementById('breath-heart');
+    const breathStatus = document.getElementById('breath-status');
+    const startBreathBtn = document.getElementById('start-breath');
 
-    let animationRunning = false;
-    let timer;
-
-    startBtn.addEventListener('click', () => {
-      if(animationRunning) return; // evitar múltiples clics
-
-      animationRunning = true;
-      breathHeart.style.animationPlayState = 'running';
-      startBtn.disabled = true;
-      startBtn.textContent = 'Ejercicio en progreso...';
-
-      // Duración del ejercicio: 15 segundos (como la animación)
-      timer = setTimeout(() => {
-        animationRunning = false;
-        breathHeart.style.animationPlayState = 'paused';
-        startBtn.disabled = false;
-        startBtn.textContent = 'Iniciar ejercicio (15s)';
-        alert('¡Ejercicio terminado! Espero que te sientas mejor :)');
-      }, 15000);
+    startBreathBtn.addEventListener('click', () => {
+      startBreathBtn.disabled = true;
+      breathStatus.textContent = 'Inhala...';
+      let seconds = 0;
+      const interval = setInterval(() => {
+        seconds++;
+        if (seconds === 5) {
+          breathStatus.textContent = 'Sostén la respiración...';
+        } else if (seconds === 10) {
+          breathStatus.textContent = 'Exhala...';
+        } else if (seconds === 15) {
+          breathStatus.textContent = 'Respira tranquilo...';
+          startBreathBtn.disabled = false;
+          clearInterval(interval);
+        }
+      }, 1000);
     });
 
-    // Pausar animación al cargar la página
-    breathHeart.style.animationPlayState = 'paused';
-
-    // Registro de emociones en memoria local
-    const form = document.getElementById('emotion-form');
+    // Registro de emociones y guardado en localStorage
+    const emotionSelect = document.getElementById('emotion-select');
+    const saveEmotionBtn = document.getElementById('save-emotion');
     const emotionList = document.getElementById('emotion-list');
 
     function loadEmotions() {
-      const saved = JSON.parse(localStorage.getItem('emotions')) || [];
+      const emotions = JSON.parse(localStorage.getItem('emotions') || '[]');
       emotionList.innerHTML = '';
-      saved.forEach((item) => {
+      emotions.forEach(e => {
         const li = document.createElement('li');
-        li.textContent = `[${item.date}] ${item.emotion} - ${item.notes}`;
+        li.textContent = `${e.date} - ${e.emotion}`;
         emotionList.appendChild(li);
       });
     }
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const emotion = form.emotion.value;
-      const notes = form.notes.value.trim();
-      if (!emotion) return alert('Selecciona una emoción');
-
-      const saved = JSON.parse(localStorage.getItem('emotions')) || [];
-      saved.push({
-        emotion,
-        notes: notes || '-',
-        date: new Date().toLocaleString()
-      });
-      localStorage.setItem('emotions', JSON.stringify(saved));
-      form.reset();
+    saveEmotionBtn.addEventListener('click', () => {
+      const val = emotionSelect.value;
+      if (!val) {
+        alert('Por favor, selecciona una emoción');
+        return;
+      }
+      const emotions = JSON.parse(localStorage.getItem('emotions') || '[]');
+      const now = new Date();
+      emotions.push({ emotion: val, date: now.toLocaleString() });
+      localStorage.setItem('emotions', JSON.stringify(emotions));
       loadEmotions();
+      emotionSelect.value = '';
     });
 
     loadEmotions();
 
-    // Consejos diarios
-    const adviceList = [
-      "Respira profundo y recuerda que cada día es una nueva oportunidad.",
-      "Tómate un momento para agradecer algo hoy.",
-      "Está bien pedir ayuda cuando la necesites.",
-      "Haz una pausa y conecta con tus sentimientos.",
-      "Un pequeño paso hoy puede marcar una gran diferencia.",
-      "Practica la gratitud para mejorar tu bienestar mental."
-    ];
+    // Canvas para dibujar
+    const canvas = document.getElementById('draw-canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
-    const adviceDiv = document.getElementById('advice');
-    const newAdviceBtn = document.getElementById('new-advice-btn');
-
-    function showRandomAdvice() {
-      const index = Math.floor(Math.random() * adviceList.length);
-      adviceDiv.textContent = adviceList[index];
+    function startPosition(e) {
+      drawing = true;
+      [lastX, lastY] = getXY(e);
+    }
+    function finishedPosition() {
+      drawing = false;
+      ctx.beginPath();
+    }
+    function draw(e) {
+      if (!drawing) return;
+      const [x, y] = getXY(e);
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#d87a8a';
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      [lastX, lastY] = [x, y];
+    }
+    function getXY(e) {
+      if (e.touches) {
+        const rect = canvas.getBoundingClientRect();
+        return [
+          e.touches[0].clientX - rect.left,
+          e.touches[0].clientY - rect.top,
+        ];
+      } else {
+        return [e.offsetX, e.offsetY];
+      }
     }
 
-    newAdviceBtn.addEventListener('click', showRandomAdvice);
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('mouseup', finishedPosition);
+    canvas.addEventListener('mouseout', finishedPosition);
+    canvas.addEventListener('mousemove', draw);
 
-    // Mostrar un consejo al cargar
-    showRandomAdvice();
+    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('touchend', finishedPosition);
+    canvas.addEventListener('touchcancel', finishedPosition);
+    canvas.addEventListener('touchmove', draw);
+
+    document.getElementById('clear-canvas').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Consejos diarios (aleatorios) - lista ampliada
+    const dailyTipEl = document.getElementById('daily-tip');
+    const newTipBtn = document.getElementById('new-tip');
+    const dailyTips = [
+      "Tómate un momento para respirar profundo hoy.",
+      "Escribe tres cosas por las que estás agradecido.",
+      "Sal a caminar y observa la naturaleza.",
+      "Habla con alguien de confianza sobre cómo te sientes.",
+      "Recuerda que está bien pedir ayuda cuando la necesites.",
+      "Dedica 5 minutos a meditar o estar en silencio.",
+      "Date permiso para descansar y recargar energías.",
+      "Escucha tu música favorita para animarte.",
+      "Practica la gratitud escribiendo un diario.",
+      "Estira tu cuerpo lentamente para liberar tensión.",
+      "Haz algo amable por otra persona hoy.",
+      "Permítete sentir tus emociones sin juzgarte.",
+      "Evita las redes sociales si te hacen sentir mal.",
+      "Bebe agua y mantente hidratado.",
+      "Disfruta de un momento de silencio y paz.",
+      "Practica un hobby que te guste o empieza uno nuevo.",
+      "Haz una pausa para observar tu respiración ahora.",
+      "Conéctate con la naturaleza, aunque sea desde la ventana.",
+      "Celebra tus pequeños logros, son importantes.",
+      "Escribe una carta que no envíes, solo para expresar tus sentimientos.",
+      "Pon música suave y mueve tu cuerpo suavemente.",
+      "Permítete decir ‘no’ cuando lo necesites.",
+      "Usa afirmaciones positivas para animarte.",
+      "Limpia y organiza un espacio pequeño para sentir control.",
+      "Visualiza un lugar seguro y tranquilo en tu mente.",
+      "Sonríe aunque no te sientas feliz, el cuerpo responde.",
+      "Prueba técnicas de relajación muscular progresiva.",
+      "Evita el exceso de cafeína o sustancias que alteren tu ánimo.",
+      "Conecta con amigos o familiares que te hagan sentir bien.",
+      "Escribe un poema, dibujo o lo que salga para liberar emociones.",
+      "Recuerda que cada día es una nueva oportunidad.",
+      "Permítete descansar sin culpa.",
+      "Escucha sonidos de la naturaleza para relajarte.",
+      "Tómate un baño o ducha relajante.",
+      "Practica mindfulness en una actividad diaria sencilla.",
+      "Mira fotos o recuerdos que te hagan sonreír.",
+      "Haz respiraciones profundas cuando te sientas abrumado.",
+      "Date un momento para hacer algo divertido y ligero.",
+      "Sé paciente contigo mismo, el cambio lleva tiempo.",
+      "Busca ayuda profesional si sientes que la necesitas.",
+      "Haz ejercicios suaves como yoga o estiramientos.",
+      "Limita el tiempo frente a pantallas si te estresa.",
+      "Recuerda que está bien pedir un abrazo.",
+      "Permítete expresar tu creatividad sin juzgar.",
+      "Agradece a alguien hoy, aunque sea en silencio.",
+      "Desconéctate un rato del trabajo o estudios.",
+      "Haz una lista de cosas que te hacen feliz.",
+      "Medita con atención plena en los sonidos a tu alrededor.",
+      "Recuerda que eres valioso tal como eres.",
+      "Celebra tu resiliencia, lo que has superado.",
+    ];
+    function showRandomTip() {
+      const randomIndex = Math.floor(Math.random() * dailyTips.length);
+      dailyTipEl.textContent = dailyTips[randomIndex];
+    }
+    newTipBtn.addEventListener('click', showRandomTip);
+    showRandomTip();
 
   </script>
+
 </body>
 </html>
