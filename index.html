@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Apoyo Salud Mental</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 10px;
+      text-align: center;
+      background: #f8d7da; /* rosado pastel claro */
+      color: #5a3e3e; /* marrón rosado oscuro para buen contraste */
+    }
+    h1 {
+      color: #a85c6a;
+    }
+    /* Corazón animado */
+    #breath-heart-container {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+    }
+    #breath-heart {
+      transform-origin: center;
+      animation: breatheHeart 15s ease-in-out infinite;
+      opacity: 0.7;
+      cursor: default;
+    }
+    @keyframes breatheHeart {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 0.4;
+      }
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #d87a8a; /* rosa medio */
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    button:hover:not(:disabled) {
+      background-color: #c35f6b;
+    }
+    button:disabled {
+      background-color: #f3a2ac;
+      cursor: not-allowed;
+    }
+    #emotion-form {
+      margin-top: 30px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    #saved-emotions {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+      background: #fbe8eb; /* fondo rosa pastel muy claro */
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #advice {
+      margin-top: 30px;
+      font-style: italic;
+      color: #a85c6a;
+      min-height: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Apoyo a la Salud Mental</h1>
+
+  <h2>Ejercicio de Respiración</h2>
+  <div id="breath-heart-container">
+    <svg
+      id="breath-heart"
+      viewBox="0 0 32 29.6"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="Corazón animado para ejercicio de respiración"
+      role="img"
+    >
+      <defs>
+        <radialGradient id="grad1" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" style="stop-color:#f8a1ae; stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#d66c7c; stop-opacity:1" />
+        </radialGradient>
+        <radialGradient id="grad2" cx="30%" cy="30%" r="50%">
+          <stop offset="0%" style="stop-color:#fce4e6; stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#d66c7c; stop-opacity:0" />
+        </radialGradient>
+      </defs>
+      <path
+        fill="url(#grad1)"
+        stroke="#c75a68"
+        stroke-width="1"
+        d="M23.6,0c-3.4,0-6.4,2.7-7.6,4.8C14.8,2.7,11.8,0,8.4,0
+           C3.7,0,0,3.6,0,8.2c0,9.1,16,21.4,16,21.4s16-12.3,16-21.4
+           C32,3.6,28.3,0,23.6,0z"
+      />
+      <path
+        fill="url(#grad2)"
+        d="M23.6,0c-3.4,0-6.4,2.7-7.6,4.8C14.8,2.7,11.8,0,8.4,0
+           C3.7,0,0,3.6,0,8.2c0,9.1,16,21.4,16,21.4s16-12.3,16-21.4
+           C32,3.6,28.3,0,23.6,0z"
+        opacity="0.4"
+      />
+    </svg>
+  </div>
+  <button id="start-btn">Iniciar ejercicio (15s)</button>
+
+  <h2>Registro de Emociones</h2>
+  <form id="emotion-form">
+    <label for="emotion">¿Cómo te sientes?</label>
+    <select id="emotion" required>
+      <option value="" disabled selected>Selecciona una emoción</option>
+      <option value="Feliz">Feliz</option>
+      <option value="Triste">Triste</option>
+      <option value="Ansioso">Ansioso</option>
+      <option value="Calmado">Calmado</option>
+      <option value="Enojado">Enojado</option>
+      <option value="Estresado">Estresado</option>
+    </select>
+
+    <label for="notes">Notas (opcional)</label>
+    <textarea id="notes" rows="3" placeholder="Escribe algo si quieres..."></textarea>
+
+    <button type="submit">Guardar emoción</button>
+  </form>
+
+  <div id="saved-emotions">
+    <h3>Emociones guardadas:</h3>
+    <ul id="emotion-list"></ul>
+  </div>
+
+  <h2>Consejo del Día</h2>
+  <div id="advice"></div>
+  <button id="new-advice-btn">Otro consejo</button>
+
+  <script>
+    // Temporizador y animación controlada
+    const startBtn = document.getElementById('start-btn');
+    const breathHeart = document.getElementById('breath-heart');
+
+    let animationRunning = false;
+    let timer;
+
+    startBtn.addEventListener('click', () => {
+      if(animationRunning) return; // evitar múltiples clics
+
+      animationRunning = true;
+      breathHeart.style.animationPlayState = 'running';
+      startBtn.disabled = true;
+      startBtn.textContent = 'Ejercicio en progreso...';
+
+      // Duración del ejercicio: 15 segundos (como la animación)
+      timer = setTimeout(() => {
+        animationRunning = false;
+        breathHeart.style.animationPlayState = 'paused';
+        startBtn.disabled = false;
+        startBtn.textContent = 'Iniciar ejercicio (15s)';
+        alert('¡Ejercicio terminado! Espero que te sientas mejor :)');
+      }, 15000);
+    });
+
+    // Pausar animación al cargar la página
+    breathHeart.style.animationPlayState = 'paused';
+
+    // Registro de emociones en memoria local
+    const form = document.getElementById('emotion-form');
+    const emotionList = document.getElementById('emotion-list');
+
+    function loadEmotions() {
+      const saved = JSON.parse(localStorage.getItem('emotions')) || [];
+      emotionList.innerHTML = '';
+      saved.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = `[${item.date}] ${item.emotion} - ${item.notes}`;
+        emotionList.appendChild(li);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emotion = form.emotion.value;
+      const notes = form.notes.value.trim();
+      if (!emotion) return alert('Selecciona una emoción');
+
+      const saved = JSON.parse(localStorage.getItem('emotions')) || [];
+      saved.push({
+        emotion,
+        notes: notes || '-',
+        date: new Date().toLocaleString()
+      });
+      localStorage.setItem('emotions', JSON.stringify(saved));
+      form.reset();
+      loadEmotions();
+    });
+
+    loadEmotions();
+
+    // Consejos diarios
+    const adviceList = [
+      "Respira profundo y recuerda que cada día es una nueva oportunidad.",
+      "Tómate un momento para agradecer algo hoy.",
+      "Está bien pedir ayuda cuando la necesites.",
+      "Haz una pausa y conecta con tus sentimientos.",
+      "Un pequeño paso hoy puede marcar una gran diferencia.",
+      "Practica la gratitud para mejorar tu bienestar mental."
+    ];
+
+    const adviceDiv = document.getElementById('advice');
+    const newAdviceBtn = document.getElementById('new-advice-btn');
+
+    function showRandomAdvice() {
+      const index = Math.floor(Math.random() * adviceList.length);
+      adviceDiv.textContent = adviceList[index];
+    }
+
+    newAdviceBtn.addEventListener('click', showRandomAdvice);
+
+    // Mostrar un consejo al cargar
+    showRandomAdvice();
+
+  </script>
+</body>
+</html>
